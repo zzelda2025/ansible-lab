@@ -1,0 +1,45 @@
+---
+- name: Cài PostgreSQL
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2
+    state: present
+    update_cache: true
+
+- name: Khởi động PostgreSQL
+  service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Tạo database user
+  postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    state: present
+    login_unix_socket: /var/run/postgresql
+  become_user: postgres
+
+- name: Tạo database
+  postgresql_db:
+    name: "{{ db_name }}"
+    owner: "{{ db_user }}"
+    state: present
+    login_unix_socket: /var/run/postgresql
+  become_user: postgres
+
+- name: Cấu hình PostgreSQL listen trên tất cả interface
+  lineinfile:
+    path: /etc/postgresql/{{ pg_version }}/main/postgresql.conf
+    regexp: "#listen_addresses = 'localhost'"
+    line: "listen_addresses = '*'"
+  notify: Restart PostgreSQL
+
+- name: Cho phép kết nối từ WireGuard subnet
+  lineinfile:
+    path: /etc/postgresql/{{ pg_version }}/main/pg_hba.conf
+    line: "host {{ db_name }} {{ db_user }} 10.10.10.1/32 md5"
+    create: false
+  notify: Restart PostgreSQL

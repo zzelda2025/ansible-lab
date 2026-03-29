@@ -1,0 +1,66 @@
+---
+- name: Wait for apt lock to be released
+  shell: |
+    while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
+      echo "Waiting for apt lock..."
+      sleep 5
+    done
+  changed_when: false
+
+- name: Stop unattended-upgrades
+  shell: systemctl stop unattended-upgrades || true
+  changed_when: false
+
+- name: Install Node.js and npm
+  apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+    update_cache: true
+
+- name: Create application directory
+  file:
+    path: /opt/webapp
+    state: directory
+    mode: "0755"
+
+- name: Deploy package.json
+  copy:
+    dest: /opt/webapp/package.json
+    content: |
+      {
+        "name": "devops-htv-webapp",
+        "version": "1.0.0",
+        "dependencies": {
+          "express": "^4.18.0",
+          "pg": "^8.11.0"
+        }
+      }
+
+- name: Deploy app.js
+  template:
+    src: app.js.j2
+    dest: /opt/webapp/app.js
+    mode: "0644"
+  notify: Restart webapp
+
+- name: Install npm dependencies
+  npm:
+    path: /opt/webapp
+    state: present
+
+- name: Deploy systemd service
+  template:
+    src: webapp.service.j2
+    dest: /etc/systemd/system/webapp.service
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart webapp
+
+- name: Enable and start webapp
+  service:
+    name: webapp
+    state: started
+    enabled: true

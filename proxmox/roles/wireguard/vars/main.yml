@@ -1,0 +1,3 @@
+---
+secrets.yml (vault): wg_proxmox_private_key, wg_ec2_public_key
+webhook extra-vars:  wg_ec2_endpoint (lấy tự động từ aws-infra output)

@@ -1,0 +1,11 @@
+[Interface]
+PrivateKey = {{ wg_ec2_private_key }}
+Address    = 10.10.10.1/24
+ListenPort = 51820
+PostUp     = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown   = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+[Peer]
+# Proxmox DB VM
+PublicKey  = {{ wg_proxmox_public_key }}
+AllowedIPs = 10.10.10.2/32

@@ -1,0 +1,7 @@
+---
+- name: Cấu hình AWS EC2 Web Server
+  hosts: all
+  become: true
+  roles:
+    - wireguard
+    - nodejs

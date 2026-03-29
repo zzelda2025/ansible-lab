@@ -1,0 +1,9 @@
+[Interface]
+PrivateKey = {{ wg_proxmox_private_key }}
+Address    = 10.10.10.2/24
+
+[Peer]
+PublicKey           = {{ wg_ec2_public_key }}
+Endpoint            = {{ wg_ec2_endpoint }}:51820
+AllowedIPs          = 10.10.10.1/32
+PersistentKeepalive = 25

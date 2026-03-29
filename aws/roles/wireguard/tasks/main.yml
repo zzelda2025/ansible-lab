@@ -1,0 +1,33 @@
+---
+- name: Cài WireGuard
+  apt:
+    name: wireguard
+    state: present
+    update_cache: true
+
+- name: Bật IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: Tạo thư mục /etc/wireguard
+  file:
+    path: /etc/wireguard
+    state: directory
+    mode: "0700"
+
+- name: Tạo cấu hình wg0.conf
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: "0600"
+  notify: Restart WireGuard
+
+- name: Bật và khởi động WireGuard
+  service:
+    name: wg-quick@wg0
+    state: started
+    enabled: true

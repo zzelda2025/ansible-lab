@@ -1,0 +1,2 @@
+---
+# db_password được inject từ secrets.yml (ansible-vault)

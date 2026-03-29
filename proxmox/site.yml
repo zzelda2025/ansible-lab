@@ -1,0 +1,8 @@
+---
+- name: Configure Proxmox DB Server
+  hosts: all
+  become: true
+  roles:
+    - postgresql
+    - role: wireguard
+      when: wg_ec2_endpoint is defined and wg_ec2_endpoint | length > 0

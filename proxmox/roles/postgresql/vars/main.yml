@@ -1,0 +1,4 @@
+---
+db_name: appdb
+db_user: appuser
+pg_version: "14"
