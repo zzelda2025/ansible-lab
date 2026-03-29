@@ -1,0 +1,5 @@
+# Ansible Vault secrets
+*/secrets.yml
+*.pem
+.vault_pass
+.ansible_secrets
