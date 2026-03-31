@@ -46,7 +46,7 @@
   notify: Restart webapp
 
 - name: Install npm dependencies
-  npm:
+  community.general.npm:
     path: /opt/webapp
     state: present
 
