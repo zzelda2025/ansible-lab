@@ -7,6 +7,7 @@
       - python3-psycopg2
     state: present
     update_cache: true
+  when: not ansible_check_mode
 
 - name: Khởi động PostgreSQL
   service:
