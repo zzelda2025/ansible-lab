@@ -7,8 +7,13 @@
       - python3-psycopg2
     state: present
     update_cache: true
-  check_mode: false    # ← apt không support check_mode, bỏ qua
-  tags: [install]
+  when: not ansible_check_mode
+  tags: install
+
+- name: Debug khi dry-run
+  debug:
+    msg: "Would install PostgreSQL packages"
+  when: ansible_check_mode
 
 - name: Khởi động PostgreSQL
   service:
