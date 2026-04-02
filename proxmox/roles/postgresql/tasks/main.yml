@@ -26,24 +26,25 @@
   # THÊM DÒNG NÀY: Bỏ qua task nếu đang chạy Dry Run
   when: not ansible_check_mode
 
+- name: Kiểm tra thư mục cấu hình PostgreSQL (Chống lỗi Dry Run)
+  stat:
+    path: "/etc/postgresql/{{ pg_version }}/main"
+  register: pg_conf_dir
+
 - name: Cấu hình PostgreSQL listen trên tất cả interface
   lineinfile:
-    path: /etc/postgresql/{{ pg_version }}/main/postgresql.conf
+    path: "/etc/postgresql/{{ pg_version }}/main/postgresql.conf"
     regexp: "#listen_addresses = 'localhost'"
     line: "listen_addresses = '*'"
   notify: Restart PostgreSQL
-  # Bỏ qua task khi đang chạy thử
-  when: not ansible_check_mode
-  # Ép Ansible không kiểm tra file ảo khi ở chế độ Dry Run
-  check_mode: no
+  # Chỉ chạy khi thư mục tồn tại VÀ không phải đang Dry Run
+  when: pg_conf_dir.stat.exists and not ansible_check_mode
 
 - name: Cho phép kết nối từ WireGuard subnet
   lineinfile:
-    path: /etc/postgresql/{{ pg_version }}/main/pg_hba.conf
+    path: "/etc/postgresql/{{ pg_version }}/main/pg_hba.conf"
     line: "host {{ db_name }} {{ db_user }} 10.10.10.1/32 md5"
     create: false
   notify: Restart PostgreSQL
-  # Bỏ qua task khi đang chạy thử
-  when: not ansible_check_mode
-  # Ép Ansible không kiểm tra file ảo khi ở chế độ Dry Run
-  check_mode: no
+  # Chỉ chạy khi thư mục tồn tại VÀ không phải đang Dry Run
+  when: pg_conf_dir.stat.exists and not ansible_check_mode
