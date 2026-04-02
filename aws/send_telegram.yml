@@ -18,29 +18,28 @@
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
             Trạng thái: Đang tạm dừng chờ duyệt (Dry Run hoàn tất).
             🔗 <a href="https://awx.vinhthai.io.vn/#/jobs/workflow/{{ awx_workflow_job_id | default('1') }}/output">Bấm vào đây để mở AWX và phê duyệt</a>
-            
+
             {% elif notify_state == 'success' %}
             ✅ <b>CÀI ĐẶT THÀNH CÔNG</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
             Trạng thái: Hệ thống đã sẵn sàng phục vụ! 🚀
-            
+
             🌍 <b>Link truy cập dịch vụ:</b>
-            <a href="http://{{ alb_dns_name }}">http://{{ alb_dns_name }}</a>
-            
+            <a href="http://{{ alb_dns_name | default('vinhthai.io.vn') }}">http://{{ alb_dns_name | default('vinhthai.io.vn') }}</a>
+
             📊 <a href="https://awx.vinhthai.io.vn/#/jobs/playbook/{{ install_job_id | default(awx_workflow_job_id) }}/output">Bấm vào đây để xem chi tiết log</a>
-            
+
             {% elif notify_state == 'failed' %}
             ❌ <b>CÀI ĐẶT THẤT BẠI</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
             Trạng thái: Đã có lỗi xảy ra trong quá trình cấu hình hệ thống! ⚠️
             🔍 <a href="https://awx.vinhthai.io.vn/#/jobs/workflow/{{ awx_workflow_job_id | default('1') }}/output">Bấm vào đây để kiểm tra nguyên nhân lỗi</a>
-            
+
             {% elif notify_state == 'denied' %}
             🚫 <b>CÀI ĐẶT BỊ TỪ CHỐI</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
             Trạng thái: Nhóm trưởng đã TỪ CHỐI phê duyệt. Tác vụ bị hủy bỏ! ⛔
-            Vui lòng kiểm tra lại cấu hình hoặc liên hệ Leader để biết lý do.
-            
+
             {% else %}
             ℹ️ <b>THÔNG BÁO TỪ AWX</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
