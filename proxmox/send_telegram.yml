@@ -1,13 +1,27 @@
 - hosts: localhost
   gather_facts: no
-  vars:
-    message: "default message"
   tasks:
-    - name: Send Telegram
+    - name: Gửi thông báo Telegram qua API
       uri:
         url: "https://api.telegram.org/bot{{ telegram_token }}/sendMessage"
         method: POST
         body_format: json
         body:
           chat_id: "{{ chat_id }}"
-          text: "{{ message }}"
+          parse_mode: "HTML"  # Bắt buộc có dòng này để Telegram hiểu các thẻ <b>, <a>
+          text: |
+            {% if notify_state == 'waiting' %}
+            ⏳ <b>YÊU CẦU PHÊ DUYỆT CÀI ĐẶT</b>
+            Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
+            Trạng thái: Đang tạm dừng chờ duyệt (Dry Run hoàn tất).
+            🔗 <a href="https://awx.vinhthai.io.vn/#/jobs/workflow/{{ awx_workflow_job_id | default('1') }}/output">Bấm vào đây để mở AWX và phê duyệt</a>
+            {% elif notify_state == 'success' %}
+            ✅ <b>CÀI ĐẶT THÀNH CÔNG</b>
+            Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
+            Trạng thái: Máy chủ đã được cấu hình hoàn tất và sẵn sàng hoạt động! 🚀
+            🔗 <a href="https://awx.vinhthai.io.vn/#/jobs/workflow/{{ awx_workflow_job_id | default('1') }}/output">Bấm vào đây để xem chi tiết log</a>
+            {% else %}
+            ℹ️ <b>THÔNG BÁO TỪ AWX</b>
+            Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
+            Trạng thái: Đang chạy một tác vụ không xác định.
+            {% endif %}
