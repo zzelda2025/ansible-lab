@@ -1,5 +1,7 @@
 - hosts: localhost
   gather_facts: no
+  vars:
+    notify_state: "unknown"  # Giá trị mặc định để chống sập lỗi undefined
   tasks:
     - name: Gửi thông báo Telegram qua API
       uri:
@@ -8,7 +10,7 @@
         body_format: json
         body:
           chat_id: "{{ chat_id }}"
-          parse_mode: "HTML"  # Bắt buộc có dòng này để Telegram hiểu các thẻ <b>, <a>
+          parse_mode: "HTML"
           text: |
             {% if notify_state == 'waiting' %}
             ⏳ <b>YÊU CẦU PHÊ DUYỆT CÀI ĐẶT</b>
@@ -23,5 +25,5 @@
             {% else %}
             ℹ️ <b>THÔNG BÁO TỪ AWX</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
-            Trạng thái: Đang chạy một tác vụ không xác định.
+            Trạng thái: Luồng đang chạy (Chưa xác định trạng thái cụ thể).
             {% endif %}
