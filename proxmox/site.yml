@@ -6,3 +6,9 @@
     - postgresql
     - role: wireguard
       when: wg_ec2_endpoint is defined and wg_ec2_endpoint | length > 0
+
+post_tasks:
+    - name: Lưu lại Job ID của Playbook này để truyền cho thông báo Telegram
+      set_stats:
+        data:
+          install_job_id: "{{ awx_job_id }}"
