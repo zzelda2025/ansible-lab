@@ -7,24 +7,24 @@
       - python3-psycopg2
     state: present
     update_cache: true
-
-- name: Khởi động PostgreSQL
-  service:
-    name: postgresql
-    state: started
-    enabled: true
+  # Thêm dòng này để gọi Handler khởi động sau khi cài xong
+  notify: Restart PostgreSQL
 
 - name: Tạo database user
   shell: |
     sudo -u postgres psql -c "SELECT 1 FROM pg_roles WHERE rolname='{{ db_user }}'" | grep -q 1 || \
     sudo -u postgres psql -c "CREATE USER {{ db_user }} WITH PASSWORD '{{ db_password }}';"
   changed_when: false
+  # THÊM DÒNG NÀY: Bỏ qua task nếu đang chạy Dry Run
+  when: not ansible_check_mode
 
 - name: Tạo database
   shell: |
     sudo -u postgres psql -c "SELECT 1 FROM pg_database WHERE datname='{{ db_name }}'" | grep -q 1 || \
     sudo -u postgres psql -c "CREATE DATABASE {{ db_name }} OWNER {{ db_user }};"
   changed_when: false
+  # THÊM DÒNG NÀY: Bỏ qua task nếu đang chạy Dry Run
+  when: not ansible_check_mode
 
 - name: Cấu hình PostgreSQL listen trên tất cả interface
   lineinfile:
