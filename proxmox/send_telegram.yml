@@ -1,4 +1,18 @@
-text: |
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    notify_state: "unknown"
+  tasks:
+    - name: Gửi thông báo Telegram qua API
+      uri:
+        url: "https://api.telegram.org/bot{{ telegram_token }}/sendMessage"
+        method: POST
+        body_format: json
+        body:
+          chat_id: "{{ chat_id }}"
+          parse_mode: "HTML"
+          text: |
             {% if notify_state == 'waiting' %}
             ⏳ <b>YÊU CẦU PHÊ DUYỆT CÀI ĐẶT</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
@@ -14,8 +28,14 @@ text: |
             {% elif notify_state == 'failed' %}
             ❌ <b>CÀI ĐẶT THẤT BẠI</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
-            Trạng thái: Đã có lỗi xảy ra trong quá trình cấu hình Ansible! ⚠️
+            Trạng thái: Đã có lỗi xảy ra trong quá trình cấu hình hệ thống! ⚠️
             🔍 <a href="https://awx.vinhthai.io.vn/#/jobs/workflow/{{ awx_workflow_job_id | default('1') }}/output">Bấm vào đây để kiểm tra nguyên nhân lỗi</a>
+            
+            {% elif notify_state == 'denied' %}
+            🚫 <b>CÀI ĐẶT BỊ TỪ CHỐI</b>
+            Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
+            Trạng thái: Nhóm trưởng đã TỪ CHỐI phê duyệt. Tác vụ bị hủy bỏ! ⛔
+            Vui lòng kiểm tra lại cấu hình hoặc liên hệ Leader để biết lý do.
             
             {% else %}
             ℹ️ <b>THÔNG BÁO TỪ AWX</b>
