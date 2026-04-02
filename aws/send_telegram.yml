@@ -22,8 +22,12 @@
             {% elif notify_state == 'success' %}
             ✅ <b>CÀI ĐẶT THÀNH CÔNG</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
-            Trạng thái: Playbook đã chạy xong! Không có lỗi (Failed = 0). 🚀
-            📊 <a href="https://awx.vinhthai.io.vn/#/jobs/playbook/{{ install_job_id | default(awx_workflow_job_id) }}/output">Bấm vào đây để xem chi tiết log cài đặt</a>
+            Trạng thái: Hệ thống đã sẵn sàng phục vụ! 🚀
+            
+            🌍 <b>Link truy cập dịch vụ:</b>
+            <a href="http://{{ alb_dns_name }}">http://{{ alb_dns_name }}</a>
+            
+            📊 <a href="https://awx.vinhthai.io.vn/#/jobs/playbook/{{ install_job_id | default(awx_workflow_job_id) }}/output">Bấm vào đây để xem chi tiết log</a>
             
             {% elif notify_state == 'failed' %}
             ❌ <b>CÀI ĐẶT THẤT BẠI</b>
