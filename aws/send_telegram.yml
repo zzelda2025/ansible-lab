@@ -1,5 +1,8 @@
+---
 - hosts: localhost
   gather_facts: no
+  vars:
+    notify_state: "unknown"
   tasks:
     - name: Gửi thông báo Telegram qua API
       uri:
@@ -8,20 +11,34 @@
         body_format: json
         body:
           chat_id: "{{ chat_id }}"
-          parse_mode: "HTML"  # Bắt buộc có dòng này để Telegram hiểu các thẻ <b>, <a>
+          parse_mode: "HTML"
           text: |
             {% if notify_state == 'waiting' %}
             ⏳ <b>YÊU CẦU PHÊ DUYỆT CÀI ĐẶT</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
             Trạng thái: Đang tạm dừng chờ duyệt (Dry Run hoàn tất).
             🔗 <a href="https://awx.vinhthai.io.vn/#/jobs/workflow/{{ awx_workflow_job_id | default('1') }}/output">Bấm vào đây để mở AWX và phê duyệt</a>
+            
             {% elif notify_state == 'success' %}
             ✅ <b>CÀI ĐẶT THÀNH CÔNG</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
-            Trạng thái: Máy chủ đã được cấu hình hoàn tất và sẵn sàng hoạt động! 🚀
-            🔗 <a href="https://awx.vinhthai.io.vn/#/jobs/workflow/{{ awx_workflow_job_id | default('1') }}/output">Bấm vào đây để xem chi tiết log</a>
+            Trạng thái: Playbook đã chạy xong! Không có lỗi (Failed = 0). 🚀
+            📊 <a href="https://awx.vinhthai.io.vn/#/jobs/playbook/{{ install_job_id | default(awx_workflow_job_id) }}/output">Bấm vào đây để xem chi tiết log cài đặt</a>
+            
+            {% elif notify_state == 'failed' %}
+            ❌ <b>CÀI ĐẶT THẤT BẠI</b>
+            Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
+            Trạng thái: Đã có lỗi xảy ra trong quá trình cấu hình hệ thống! ⚠️
+            🔍 <a href="https://awx.vinhthai.io.vn/#/jobs/workflow/{{ awx_workflow_job_id | default('1') }}/output">Bấm vào đây để kiểm tra nguyên nhân lỗi</a>
+            
+            {% elif notify_state == 'denied' %}
+            🚫 <b>CÀI ĐẶT BỊ TỪ CHỐI</b>
+            Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
+            Trạng thái: Nhóm trưởng đã TỪ CHỐI phê duyệt. Tác vụ bị hủy bỏ! ⛔
+            Vui lòng kiểm tra lại cấu hình hoặc liên hệ Leader để biết lý do.
+            
             {% else %}
             ℹ️ <b>THÔNG BÁO TỪ AWX</b>
             Tên luồng: {{ awx_workflow_job_name | default('AWX Workflow') }}
-            Trạng thái: Đang chạy một tác vụ không xác định.
+            Trạng thái: Luồng đang chạy (Chưa xác định trạng thái cụ thể).
             {% endif %}
