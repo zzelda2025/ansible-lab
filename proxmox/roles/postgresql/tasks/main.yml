@@ -32,8 +32,10 @@
     regexp: "#listen_addresses = 'localhost'"
     line: "listen_addresses = '*'"
   notify: Restart PostgreSQL
-  # THÊM DÒNG NÀY:
+  # Bỏ qua task khi đang chạy thử
   when: not ansible_check_mode
+  # Ép Ansible không kiểm tra file ảo khi ở chế độ Dry Run
+  check_mode: no
 
 - name: Cho phép kết nối từ WireGuard subnet
   lineinfile:
@@ -41,5 +43,7 @@
     line: "host {{ db_name }} {{ db_user }} 10.10.10.1/32 md5"
     create: false
   notify: Restart PostgreSQL
-  # THÊM DÒNG NÀY:
+  # Bỏ qua task khi đang chạy thử
   when: not ansible_check_mode
+  # Ép Ansible không kiểm tra file ảo khi ở chế độ Dry Run
+  check_mode: no
