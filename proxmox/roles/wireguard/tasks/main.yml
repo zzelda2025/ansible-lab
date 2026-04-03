@@ -22,10 +22,10 @@
     name: wg-quick@wg0
     state: started
     enabled: true
-  ignore_errors: "{{ ansible_check_mode }}"
+  when: not ansible_check_mode      # ← skip hoàn toàn khi dry run
 
 - name: Restart WireGuard để áp dụng config mới
   service:
     name: wg-quick@wg0
     state: restarted
-  ignore_errors: "{{ ansible_check_mode }}"
+  when: not ansible_check_mode      # ← tương tự
