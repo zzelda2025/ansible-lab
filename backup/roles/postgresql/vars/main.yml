@@ -1,5 +1,0 @@
----
-db_name: appdb
-db_user: appuser
-db_password: "VFS@2025"
-pg_version: "14"

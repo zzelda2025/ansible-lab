@@ -1,6 +1,0 @@
----
-- name: Cấu hình DB Server
-  hosts: all
-  become: true
-  roles:
-    - postgresql
