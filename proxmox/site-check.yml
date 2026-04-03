@@ -1,9 +1,0 @@
-- name: Dry Run - Configure Proxmox DB Server
-  hosts: all
-  become: true
-  check_mode: true        # ← bật check mode ở đây
-  diff: true              # ← hiện diff để thấy thay đổi
-  roles:
-    - postgresql
-    - role: wireguard
-      when: wg_ec2_endpoint is defined and wg_ec2_endpoint | length > 0
